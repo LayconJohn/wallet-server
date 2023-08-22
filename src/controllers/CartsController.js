@@ -7,10 +7,19 @@ class CartsController {
             return res.status(200).json(carts);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({error: "Internal server error"})
-        }
+            return res.status(500).json({error: "Internal server error"});
+        }      
+    }
 
-        
+    async create(req, res) {
+        try {
+            const { code, price } = req.body;
+            const cart = await Cart.create({ code, price });
+            return res.status(201).json(cart);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({error: "Internal server error"});
+        }
     }
 }
 
