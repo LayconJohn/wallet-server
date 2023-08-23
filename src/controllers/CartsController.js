@@ -40,6 +40,22 @@ class CartsController {
             return res.status(500).json({error: "Internal server error"});
         }
     }
+
+    async destroy(req, res) {
+        try {
+            const { id } = req.params;
+            const cart = await Cart.findById(id);
+            if (!cart) {
+                return res.status(404).json();
+            }
+
+            await cart.deleteOne();
+            return res.status(200).json();
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({error: "Internal server error"});  
+        }
+    }
 }
 
 export default new CartsController();
