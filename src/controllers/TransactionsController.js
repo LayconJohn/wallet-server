@@ -3,12 +3,13 @@ import Cart from "../models/Cart.js";
 import * as Yup from "yup";
 import { parsePhoneNumber } from "libphonenumber-js";
 import { cpf, cnpj } from "cpf-cnpj-validator";
+import TransactionService from "../services/transactionsService.js";
 
 class TransactionController {
     async create(req, res){
         try {
             const {
-                cartCode,
+                cardCode,
                 paymentType,
                 installments,
                 customerName,
@@ -28,7 +29,7 @@ class TransactionController {
             } = req.body;
 
             const schema = Yup.object({
-                cartCode: Yup.string().required(),
+                cardCode: Yup.string().required(),
                 paymentType: Yup.mixed().oneOf(["credit_card", "billet"]).required(),
                 installments: Yup.number()
                     .min(1)
@@ -59,12 +60,39 @@ class TransactionController {
                 return res.status(400).json( { error: "Error on validation schema" } )
             }
 
-            const cart = await Cart.findOne({ code: cartCode});
-            if (!cart.code) {
+            const cart = await Cart.findOne({ code: cardCode});
+            if (!cart) {
                 return res.status(404).json( {error: "Cart not found"} )
             }
 
-            return res.status(201).json();
+            const service = new TransactionService()
+            const response = await service.process({
+                cardCode,
+                paymentType,
+                installments,
+                customer: {
+                    name: customerName,
+                    email: customerEmail,
+                    mobile: customerMobile,
+                    document: customerDocument,
+                },
+                billing: {
+                    address: billingAddress,
+                    number: billingNumber,
+                    neighborhood: billingNeighborhood,
+                    city: billingCity,
+                    state: billingState,
+                    zipCode: billingZipCode, 
+                },
+                creditCard: {
+                    number: creditCardNumber,
+                    expiration: creditCardExpiration,
+                    holderName: creditCardHolderName,
+                    cvv: creditCardCvv,
+                }
+            })
+
+            return res.status(201).json(response);
         } catch (error) {
             console.log(error);
             return res.status(500).json({ error: "internal server error" })
