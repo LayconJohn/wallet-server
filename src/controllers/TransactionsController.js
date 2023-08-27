@@ -1,4 +1,5 @@
 import Transaction from "../models/Transaction.js";
+import Cart from "../models/Cart.js";
 import * as Yup from "yup";
 import { parsePhoneNumber } from "libphonenumber-js";
 import { cpf, cnpj } from "cpf-cnpj-validator";
@@ -53,12 +54,16 @@ class TransactionController {
                     return paymentType == "credit_card" ? schema.required() : schema
                 }),
             })
-            //const validation = await schema.validate(req.body);
             const isValidSchema = await schema.isValid(req.body)
             if (!(isValidSchema)) {
-                //consolelog(validation)
                 return res.status(400).json( { error: "Error on validation schema" } )
             }
+
+            const cart = await Cart.findOne({ code: cartCode});
+            if (!cart.code) {
+                return res.status(404).json( {error: "Cart not found"} )
+            }
+
             return res.status(201).json();
         } catch (error) {
             console.log(error);
