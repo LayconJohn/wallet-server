@@ -50,7 +50,7 @@ class PagarMeProvider {
                 document: [
                     {
                         type: cpf.isValid(customer.document) ? "cpf" : "cnpj",
-                        document: customer.document.replace(/[^?0-9]/g, ""),
+                        document: customer?.document.replace(/[^?0-9]/g, ""),
                     }
                 ],
             }

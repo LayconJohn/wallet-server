@@ -34,12 +34,12 @@ class TransactionController {
                 installments: Yup.number()
                     .min(1)
                     .when("paymentType", (paymentType, schema) => paymentType === "credit_card" ? schema.max(12) : schema.max(1)),
-                costumerName: Yup.string().min(3).required(),
-                costumerEmail: Yup.string().email().required(),
-                costumerMobile: Yup.string()
+                customerName: Yup.string().min(3).required(),
+                customerEmail: Yup.string().email().required(),
+                customerMobile: Yup.string()
                     .required()
                     .test("is-valid-mobile", "${path} is not a mobile number", (value) => parsePhoneNumber(value, "BR").isValid()),
-                costumerDocument: Yup.string()
+                customerDocument: Yup.string()
                     .required()
                     .test("is-valid-document", "${path} is not a valid CPF/ CNPJ", (value) => cpf.isValid(value) || cnpj.isValid(value)),
                 creditCardNumber: Yup.string().when("paymentType", (paymentType, schema) => {
@@ -73,7 +73,7 @@ class TransactionController {
                 customer: {
                     name: customerName,
                     email: customerEmail,
-                    mobile: parsePhoneNumber(customerMobile, "BR").format("E.164"),
+                    mobile: customerMobile,
                     document: customerDocument,
                 },
                 billing: {
