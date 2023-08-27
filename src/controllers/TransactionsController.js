@@ -40,13 +40,23 @@ class TransactionController {
                 costumerDocument: Yup.string()
                     .required()
                     .test("is-valid-document", "${path} is not a valid CPF/ CNPJ", (value) => cpf.isValid(value) || cnpj.isValid(value)),
+                creditCardNumber: Yup.string().when("paymentType", (paymentType, schema) => {
+                    return paymentType == "credit_card" ? schema.required() : schema
+                }),
+                creditCardExpiration: Yup.string().when("paymentType", (paymentType, schema) => {
+                    return paymentType == "credit_card" ? schema.required() : schema
+                }),
+                creditCardHolderName: Yup.string().when("paymentType", (paymentType, schema) => {
+                    return paymentType == "credit_card" ? schema.required() : schema
+                }),
+                creditCardCvv: Yup.string().when("paymentType", (paymentType, schema) => {
+                    return paymentType == "credit_card" ? schema.required() : schema
+                }),
             })
-            const error = await schema.validate(req.body);
-            
+            //const validation = await schema.validate(req.body);
             const isValidSchema = await schema.isValid(req.body)
             if (!(isValidSchema)) {
-                //TO-DO: validar erro do costumer Document
-                consolelog(error)
+                //consolelog(validation)
                 return res.status(400).json( { error: "Error on validation schema" } )
             }
             return res.status(201).json();
