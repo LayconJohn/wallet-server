@@ -64,7 +64,7 @@ class PagarMeProvider {
                     state: billing.state,
                     city: billing.city,
                     neighborhood: billing.neighborhood,
-                    street: billing.street,
+                    street: billing.address,
                     street_number: billing.number,
                     zipcode: billing.zipCode,
                 }

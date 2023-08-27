@@ -48,6 +48,7 @@ class TransactionService {
             paymentType,
             creditCard,
             customer,
+            billing,
         });
 
         return transaction;
