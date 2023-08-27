@@ -1,4 +1,6 @@
 import { cpf } from "cpf-cnpj-validator";
+import pagarme from "pagarme";
+import "dotenv/config";
 
 class PagarMeProvider {
     async process ({
@@ -66,7 +68,7 @@ class PagarMeProvider {
                     neighborhood: billing.neighborhood,
                     street: billing.address,
                     street_number: billing.number,
-                    zipcode: billing.zipCode,
+                    zipcode: billing.zipCode.replace(/[^?0-9]/g, ""),
                 }
             }
         } : {  };
@@ -107,7 +109,13 @@ class PagarMeProvider {
             ...metaDataParams,
         }
 
-        console.debug("transactionParams", transactionParams);
+        const client = await pagarme.client.connect({
+            api_key: process.env.PAGARME_API_KEY
+        })
+
+        const response = await client.transactions.create(transactionParams);
+
+        console.debug("response", response);
     }
 }
 
