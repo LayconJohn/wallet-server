@@ -1,5 +1,6 @@
 import Cart from "../models/Cart.js";
 import Transaction from "../models/Transaction.js";
+import { v4 as uuidv4 } from "uuid";
 
 class TransactionService {
     async process({
@@ -17,7 +18,7 @@ class TransactionService {
         const transaction = await Transaction.create({
             cardCode: cart.code,
             installments,
-            code: 'abc123',
+            code: await uuidv4(),
             total: cart.price,
             paymentType,
             status: "started",
