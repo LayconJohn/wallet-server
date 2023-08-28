@@ -116,7 +116,6 @@ class PagarMeProvider {
 
         const response = await client.transactions.create(transactionParams);
 
-        console.debug("response", response);
         return {
             transactionId: response.id,
             status: this.translateStatus(response.status),

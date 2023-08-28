@@ -41,7 +41,7 @@ class TransactionService {
         })
 
 
-        this.paymentProvider.process({
+        const response = this.paymentProvider.process({
             transactionCode: transaction.code,
             total: transaction.total,
             installments,
@@ -50,6 +50,12 @@ class TransactionService {
             customer,
             billing,
         });
+
+        transaction.updateOne({
+            transactionId: response.transactionId,
+            status: response.status,
+            processorReponse: response.processResponse
+        })
 
         return transaction;
     }
