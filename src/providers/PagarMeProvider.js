@@ -120,7 +120,14 @@ class PagarMeProvider {
         return {
             transactionId: response.id,
             status: this.translateStatus(response.status),
-            
+            billet: {
+                utl: response.boleto_url,
+                barCode: response.boleto_barcode,
+            },
+            card: {
+                id: response.card?.id,
+            },
+            processorResponse: JSON.stringify(response),
         }
     }
 
