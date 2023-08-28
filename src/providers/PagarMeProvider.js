@@ -23,6 +23,7 @@ class PagarMeProvider {
             payment_method: "credit_card",
             amount: total * 100,
             installments,
+            card_holder_name: creditCard.holderName,
             card_number: creditCard.number.replace(/[^?0-9]/g, ""), //Remove tudo que não for número
             card_expiration_date: creditCard.expiration.replace(/[^?0-9]/g, ""),
             card_cvv: creditCard.cvv,
@@ -116,6 +117,26 @@ class PagarMeProvider {
         const response = await client.transactions.create(transactionParams);
 
         console.debug("response", response);
+        return {
+            transactionId: response.id,
+            status: this.translateStatus(response.status),
+            
+        }
+    }
+
+    translateStatus(status) {
+        const statusMap = { 
+            processing: "processing",
+            waiting_payment: "pending",
+            authorized: "pending",
+            paid: "approved",
+            refused: "refused",
+            pending_refund: "refunded",
+            refunded: "refunded",
+            chargedback: "chargeback" ,
+        }
+
+        return statusMap[status];
     }
 }
 
