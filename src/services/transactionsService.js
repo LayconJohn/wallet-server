@@ -41,7 +41,7 @@ class TransactionService {
         })
 
 
-        const response = this.paymentProvider.process({
+        const response = await this.paymentProvider.process({
             transactionCode: transaction.code,
             total: transaction.total,
             installments,
@@ -51,13 +51,27 @@ class TransactionService {
             billing,
         });
 
-        transaction.updateOne({
+        await transaction.updateOne({
             transactionId: response.transactionId,
             status: response.status,
             processorReponse: response.processResponse
         })
 
         return transaction;
+    }
+
+    async updateStatus({ code, providerStatus }) {
+        const transaction = Transaction.findOne({ code });
+        if (!transaction) {
+            throw `Transaction ${code} not found`;
+        }
+
+        const status = await this.paymentProvider.translateStatus(providerStatus);
+        if (!status) {
+            throw 'Status is empty';
+        }
+
+        await transaction.updateOne({ status });
     }
 }
 
